@@ -13,7 +13,7 @@
     },
     "env": {
         "SWIFT_VERSION": {
-            "value": "5.5.0"
+            "value": "5.5"
         }
     },
     "environments": {
