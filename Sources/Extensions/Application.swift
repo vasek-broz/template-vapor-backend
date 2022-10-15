@@ -6,27 +6,30 @@ import Fluent
 import FluentMongoDriver
 
 extension Application {
-    public func configure() throws {
-        useResourcesPublicDirectoryFileMiddleware()
-
-        try databases.use(.mongo(
-            connectionString: Environment.get("DATABASE_URL") ?? "mongodb://localhost:27017/vapor_database"
-        ), as: .mongo)
-        
-        migrations.add(CreateTodo())
-        
-        get("") { req async in
-            "It works!"
-        }
-
-        get("hello") { req async -> String in
-            "Hello, world!"
-        }
-
-        try register(collection: TodoController())
+    // MARK: - Configuration -
+    func configure() throws {
+        middleware.use(FileMiddleware(publicDirectory: directory.workingDirectory + "/Resources/Public/"))
+        try setupDatabase()
+        addMigrations()
+        try registerRouteCollections()
     }
     
-    private func useResourcesPublicDirectoryFileMiddleware() {
-        middleware.use(FileMiddleware(publicDirectory: directory.workingDirectory + "/Resources/Public/"))
+    private func setupDatabase() throws {
+        try databases.use(.mongo(
+            connectionString: "mongodb://localhost:27017/vapor_database"
+        ), as: .mongo)
+    }
+    
+    private func addMigrations() {
+        migrations.add(TemplateModelCreationMigration())
+    }
+    
+    private func registerRouteCollections() throws {
+        try register(collection: TemplateController())
+    }
+    
+    // MARK: - Database -
+    var database: Database {
+        db
     }
 }
