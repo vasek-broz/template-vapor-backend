@@ -1,4 +1,4 @@
-name: test
+name: ci
 on:
     pull_request:
     push:
@@ -6,7 +6,7 @@ on:
             - development
             - master
 jobs:
-    build:
+    test:
         runs-on: macos-12
         steps:
         - uses: actions/checkout@v3
