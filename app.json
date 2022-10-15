@@ -1,5 +1,5 @@
 {
-    "repository": "https://github.com/vasek-broz/template-vapor-backend"
+    "repository": "https://github.com/vasek-broz/template-vapor-backend",
     "buildpacks": [
         {
             "url": "vapor/vapor"
