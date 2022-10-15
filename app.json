@@ -1,0 +1,29 @@
+{
+    "repository": "https://github.com/vasek-broz/template-vapor-backend"
+    "buildpacks": [
+        {
+            "url": "vapor/vapor"
+        }
+    ],
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "hobby"
+        }
+    },
+    "env": {
+        "SWIFT_VERSION": {
+            "value": "5.5.0"
+        }
+    },
+    "environments": {
+        "review": {
+            "formation": {
+                "web": {
+                    "quantity": 1,
+                    "size": "free"
+                }
+            }
+        }
+    }
+}
