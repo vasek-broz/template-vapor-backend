@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "TemplateVaporApp",
+    name: "TemplateVaporBackend",
     platforms: [
        .macOS(.v12)
     ],
@@ -12,13 +12,14 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-mongo-driver.git", from: "1.0.0"),
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "App",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentMongoDriver", package: "fluent-mongo-driver")
             ],
+            path: "Sources",
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
                 // the `.unsafeFlags` construct required by SwiftPM, this flag is recommended for Release
@@ -26,10 +27,13 @@ let package = Package(
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
             ]
         ),
-        .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
-        .testTarget(name: "Controllers", dependencies: [
-            .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor"),
-        ])
+        .testTarget(
+            name: "Tests",
+            dependencies: [
+                .target(name: "App"),
+                .product(name: "XCTVapor", package: "vapor"),
+            ],
+            path: "Tests"
+        )
     ]
 )
