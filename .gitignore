@@ -1,5 +1,6 @@
 ## Swift Package Manager
 .swiftpm
+Package.resolved
 
 # macOS Finder
 .DS_Store
