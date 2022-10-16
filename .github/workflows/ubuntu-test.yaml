@@ -1,0 +1,21 @@
+name: ci
+on:
+    pull_request:
+    push:
+        branches:
+            - development
+            - master
+jobs:
+    test:
+        name: ubuntu-test
+        runs-on: ubuntu-20
+        steps:
+        - uses: actions/checkout@v3
+        - name: swift_installation
+          uses: swift-actions/setup-swift@v1.18.0
+          with:
+            swift-version: '5.5'
+        - name: database_setup
+          run: docker run --name mongodb -d -p 27017:27017 mongo
+        - name: test
+          run: swift test
