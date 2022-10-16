@@ -25,7 +25,9 @@
                 }
             },
             "env": {
-                "SWIFT_VERSION": {},
+                "SWIFT_VERSION": {
+                    "value": "5.5"
+                },
                 "ENVIRONMENT_NAME": {
                     "value": "review"
                 }
