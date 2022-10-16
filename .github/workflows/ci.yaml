@@ -1,4 +1,4 @@
-name: ci
+name: CI
 on:
     pull_request:
     push:
@@ -21,7 +21,7 @@ jobs:
 #          run: swift test
     ubuntu-test:
         name: ubuntu-test
-        runs-on: ubuntu-20
+        runs-on: ubuntu-20.04
         steps:
         - uses: actions/checkout@v3
         - name: swift_installation
