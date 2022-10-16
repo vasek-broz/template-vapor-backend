@@ -15,9 +15,18 @@ extension Application {
     }
     
     private func setupDatabase() throws {
-        try databases.use(.mongo(
-            connectionString: "mongodb://localhost:27017/vapor_database"
-        ), as: .mongo)
+        switch environment {
+        case .development:
+            try databases.use(.mongo(
+                connectionString: "mongodb://localhost:27017/template_vapor_backend_development_database"
+            ), as: .mongo)
+        case .testing:
+            try databases.use(.mongo(
+                connectionString: "mongodb://localhost:27017/template_vapor_backend_testing_database"
+            ), as: .mongo)
+        default:
+            break
+        }
     }
     
     private func addMigrations() {
