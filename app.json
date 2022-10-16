@@ -23,18 +23,7 @@
                     "quantity": 1,
                     "size": "free"
                 }
-            },
-            "env": {
-                "SWIFT_VERSION": {
-                    "value": "5.5"
-                },
-                "ENVIRONMENT_NAME": {
-                    "value": "pull-request-review"
-                },
-                "DATABASE_CONNECTION_STRING": {
-                    "value": "mongodb+srv://review_app:lxxJ7nUVD9KY2VcW@review-environments.qrpqtqz.mongodb.net"
-                },
-            },
+            }
         }
     },
     "stack": "heroku-20"
