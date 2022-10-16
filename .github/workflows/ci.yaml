@@ -1,4 +1,4 @@
-name: ci
+name: CI
 on:
     pull_request:
     push:
@@ -6,15 +6,24 @@ on:
             - development
             - master
 jobs:
-    test:
-        name: test
+    macos-test:
+        name: macos-test
         runs-on: macos-12
         steps:
         - uses: actions/checkout@v3
         - name: docker_installation
           run: brew install docker
-        - name: colima_start
+        - name: container_runtime_setup
           run: colima start
+        - name: database_setup
+          run: docker run --name mongodb -d -p 27017:27017 mongo
+        - name: test
+          run: swift test
+    ubuntu-test:
+        name: ubuntu-test
+        runs-on: ubuntu-20.04
+        steps:
+        - uses: actions/checkout@v3
         - name: database_setup
           run: docker run --name mongodb -d -p 27017:27017 mongo
         - name: test
