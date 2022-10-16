@@ -12,6 +12,6 @@ jobs:
         steps:
         - uses: actions/checkout@v3
         - name: database_setup
-          run: docker run --name mongodb -d -p 27017:27017 mongo
+          uses: supercharge/mongodb-github-action@latest
         - name: test
           run: swift test
