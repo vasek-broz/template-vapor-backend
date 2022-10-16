@@ -24,8 +24,16 @@ extension Application {
             try databases.use(.mongo(
                 connectionString: "mongodb://localhost:27017/template_vapor_backend_testing_database"
             ), as: .mongo)
+        case .pullRequestReview:
+            try databases.use(.mongo(
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuPullRequestNumber())"
+            ), as: .mongo)
+        case .developmentReview, .staging, .production:
+            try databases.use(.mongo(
+                connectionString: Environment.Variables.getDatabaseConnectionString()
+            ), as: .mongo)
         default:
-            break
+            throw ConfigurationError.unknownEnvironmentDetected
         }
     }
     
@@ -40,5 +48,10 @@ extension Application {
     // MARK: - Database -
     var database: Database {
         db
+    }
+    
+    // MARK: - Nested Types -
+    enum ConfigurationError: Error {
+        case unknownEnvironmentDetected
     }
 }
