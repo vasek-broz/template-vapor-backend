@@ -11,7 +11,9 @@ jobs:
         runs-on: macos-12
         steps:
         - uses: actions/checkout@v3
+        - name: docker_installation
+          run: brew install docker
         - name: database_setup
-          uses: supercharge/mongodb-github-action@1.8.0
+          run: docker run --name mongodb -d -p 27017:27017 mongo
         - name: test
           run: swift test
