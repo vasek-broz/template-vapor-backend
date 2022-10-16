@@ -18,19 +18,23 @@ extension Application {
         switch environment {
         case .development:
             try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template_vapor_backend_development_database"
+                connectionString: "mongodb://localhost:27017/template-vapor-be-development-database"
             ), as: .mongo)
         case .testing:
             try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template_vapor_backend_testing_database"
+                connectionString: "mongodb://localhost:27017/template-vapor-be-testing-database"
             ), as: .mongo)
-        case .pullRequestReview:
+        case .review:
             try databases.use(.mongo(
-                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())"
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())-database"
             ), as: .mongo)
-        case .developmentReview, .staging, .production:
+        case .staging:
             try databases.use(.mongo(
-                connectionString: Environment.Variables.getDatabaseConnectionString()
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/template-vapor-be-staging-database"
+            ), as: .mongo)
+        case .production:
+            try databases.use(.mongo(
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/template-vapor-be-production-database"
             ), as: .mongo)
         default:
             throw ConfigurationError.unknownEnvironmentDetected

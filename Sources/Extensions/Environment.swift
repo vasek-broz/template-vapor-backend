@@ -13,12 +13,8 @@ extension Environment {
         .custom(name: "staging")
     }
     
-    static var developmentReview: Environment {
-        .custom(name: "development-review")
-    }
-    
-    static var pullRequestReview: Environment {
-        .custom(name: "pull-request-review")
+    static var review: Environment {
+        .custom(name: "review")
     }
     
     // MARK: - Variables -
