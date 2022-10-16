@@ -23,6 +23,12 @@
                     "quantity": 1,
                     "size": "free"
                 }
+            },
+            "env": {
+                "SWIFT_VERSION": {},
+                "ENVIRONMENT_NAME": {
+                    "value": "review"
+                }
             }
         }
     },
