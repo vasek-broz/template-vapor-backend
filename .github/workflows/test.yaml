@@ -12,11 +12,7 @@ jobs:
         steps:
         - uses: actions/checkout@v3
         - name: docker_installation
-          run: brew install docker
-        - name: docker_unmask
-          run: sudo launchctl unmask docker
-        - name: docker_run
-          run: launchctl start docker
+          uses: docker-practice/actions-setup-docker@master
         - name: database_setup
           run: docker run --name mongodb -d -p 27017:27017 mongo
         - name: test
