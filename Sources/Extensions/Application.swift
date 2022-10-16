@@ -26,7 +26,7 @@ extension Application {
             ), as: .mongo)
         case .pullRequestReview:
             try databases.use(.mongo(
-                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuPullRequestNumber())"
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())"
             ), as: .mongo)
         case .developmentReview, .staging, .production:
             try databases.use(.mongo(

@@ -37,11 +37,11 @@ extension Environment {
             return environmentNameValue
         }
         
-        static func getHerokuPullRequestNumber() throws -> String {
-            guard let herokuPullRequestNumberValue = get("HEROKU_PR_NUMBER") else {
-                throw VariablesError.missingEnvironmentVariable(name: "HEROKU_PR_NUMBER")
+        static func getHerokuAppName() throws -> String {
+            guard let herokuAppNameValue = get("HEROKU_APP_NAME") else {
+                throw VariablesError.missingEnvironmentVariable(name: "HEROKU_APP_NAME")
             }
-            return herokuPullRequestNumberValue
+            return herokuAppNameValue
         }
     }
     
