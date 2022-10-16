@@ -12,6 +12,6 @@ jobs:
         steps:
         - uses: actions/checkout@v3
         - name: database_setup
-          uses: supercharge/mongodb-github-action@latest
+          uses: supercharge/mongodb-github-action@1.8.0
         - name: test
           run: swift test
