@@ -4,21 +4,13 @@
 import Vapor
 
 extension Environment {
-    static func bootstrap() throws -> Environment {
-        .init(name: try Environment.Variables.getEnvironmentName())
-    }
-    
     // MARK: - Custom -
     static var staging: Environment {
         .custom(name: "staging")
     }
     
-    static var developmentReview: Environment {
-        .custom(name: "development-review")
-    }
-    
-    static var pullRequestReview: Environment {
-        .custom(name: "pull-request-review")
+    static var review: Environment {
+        .custom(name: "review")
     }
     
     // MARK: - Variables -
@@ -28,13 +20,6 @@ extension Environment {
                 throw VariablesError.missingEnvironmentVariable(name: "DATABASE_CONNECTION_STRING")
             }
             return databaseConnectionStringValue
-        }
-        
-        static func getEnvironmentName() throws -> String {
-            guard let environmentNameValue = get("ENVIRONMENT_NAME") else {
-                throw VariablesError.missingEnvironmentVariable(name: "ENVIRONMENT_NAME")
-            }
-            return environmentNameValue
         }
         
         static func getHerokuAppName() throws -> String {

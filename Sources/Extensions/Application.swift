@@ -16,21 +16,17 @@ extension Application {
     
     private func setupDatabase() throws {
         switch environment {
-        case .development:
+        case .development, .testing:
             try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template_vapor_backend_development_database"
+                connectionString: "mongodb://localhost:27017/template-vapor-be-\(environment.name)-database"
             ), as: .mongo)
-        case .testing:
+        case .review:
             try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template_vapor_backend_testing_database"
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())-database"
             ), as: .mongo)
-        case .pullRequestReview:
+        case .staging, .production:
             try databases.use(.mongo(
-                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())"
-            ), as: .mongo)
-        case .developmentReview, .staging, .production:
-            try databases.use(.mongo(
-                connectionString: Environment.Variables.getDatabaseConnectionString()
+                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/template-vapor-be-\(environment.name)-database"
             ), as: .mongo)
         default:
             throw ConfigurationError.unknownEnvironmentDetected
