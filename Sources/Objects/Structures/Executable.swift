@@ -5,7 +5,7 @@ import Vapor
 
 @main struct Executable {
     static func main() throws {
-        var environment = try Environment.bootstrap()
+        var environment = try Environment.detect()
         try LoggingSystem.bootstrap(from: &environment)
         let application = Application(environment)
         defer { application.shutdown() }
