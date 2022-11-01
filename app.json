@@ -34,5 +34,11 @@
             }
         }
     },
+    "scripts": {
+        "pr-predestroy": {
+            "command": "teardown_review_pr_environment_database",
+            "size": "free"
+        }
+    },
     "stack": "heroku-20"
 }
