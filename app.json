@@ -8,9 +8,12 @@
     "formation": {
         "web": {
             "quantity": 1,
-            "size": "hobby"
+            "size": "basic"
         }
     },
+    "addons": [
+        "heroku-postgresql:basic"
+    ],
     "env": {
         "SWIFT_VERSION": {
             "value": "5.5"
@@ -21,9 +24,12 @@
             "formation": {
                 "web": {
                     "quantity": 1,
-                    "size": "free"
+                    "size": "eco"
                 }
             },
+            "addons": [
+                "heroku-postgresql:mini"
+            ],
             "env": {
                 "SWIFT_VERSION": {
                     "value": "5.5"
@@ -32,12 +38,6 @@
                     "value": "review"
                 }
             }
-        }
-    },
-    "scripts": {
-        "pr-predestroy": {
-            "command": "teardown_review_pr_environment_database",
-            "size": "free"
         }
     },
     "stack": "heroku-20"
