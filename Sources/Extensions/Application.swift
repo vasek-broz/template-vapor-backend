@@ -3,7 +3,7 @@
 
 import Vapor
 import Fluent
-import FluentMongoDriver
+import FluentPostgresDriver
 
 extension Application {
     // MARK: - Configuration -
@@ -12,22 +12,25 @@ extension Application {
         try setupDatabase()
         addMigrations()
         try registerRouteCollections()
+        if environment == .development || environment == .testing {
+            try autoMigrate().wait()
+        }
     }
     
     private func setupDatabase() throws {
         switch environment {
         case .development, .testing:
-            try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template-vapor-be-\(environment.name)-database"
-            ), as: .mongo)
-        case .review:
-            try databases.use(.mongo(
-                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())-database"
-            ), as: .mongo)
-        case .staging, .production:
-            try databases.use(.mongo(
-                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/template-vapor-be-\(environment.name)-database"
-            ), as: .mongo)
+            databases.use(.postgres(hostname: "localhost",
+                                        username: "username",
+                                        password: "password",
+                                        database: "database"),
+                              as: .psql)
+        case .review, .staging, .production:
+            let databaseURL = try Environment.Variables.getDatabaseURL()
+            guard let postgresConfiguration = PostgresConfiguration(url: databaseURL) else {
+                throw ConfigurationError.unableToInitialiazePostgresConfiguration
+            }
+            databases.use(.postgres(configuration: postgresConfiguration), as: .psql)
         default:
             throw ConfigurationError.unknownEnvironmentDetected
         }
@@ -38,7 +41,7 @@ extension Application {
     }
     
     private func registerRouteCollections() throws {
-        try register(collection: TemplateController())
+        try register(collection: TemplatesController())
     }
     
     // MARK: - Database -
@@ -49,5 +52,6 @@ extension Application {
     // MARK: - Nested Types -
     enum ConfigurationError: Error {
         case unknownEnvironmentDetected
+        case unableToInitialiazePostgresConfiguration
     }
 }
