@@ -13,7 +13,7 @@ final class TemplateTests: XCTestCase {
         try await TemplateModel(templateField: "first").save(on: application.database)
         try await TemplateModel(templateField: "second").save(on: application.database)
         
-        try application.test(.GET, "template/all", afterResponse: { response in
+        try application.test(.GET, "templates", afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let decodedResponseContent = try response.content.decode([TemplateModel].self)
             XCTAssertEqual(decodedResponseContent.count, 2)
