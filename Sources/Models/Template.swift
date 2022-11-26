@@ -2,25 +2,27 @@
 //  Created by Václav Brož on 15. 10. 2022
 
 import Fluent
-import BSON
 import Vapor
 
-final class TemplateModel: Model, Content {
+final class TemplateModel: Model {
     // MARK: - Schema -
     static let schema = "template_models"
     
     // MARK: - ID -
-    @ID(custom: .id)
-    var id: ObjectId?
+    @ID(key: .id)
+    var id: UUID?
 
     // MARK: - Fields -
     @Field(key: "template_field")
     var templateField: String
 
     // MARK: - Initialiazers -
-    init() { }
+    init() {}
     
     init(templateField: String) {
         self.templateField = templateField
     }
 }
+
+// MARK: - Content Conformance -
+extension TemplateModel: Content {}

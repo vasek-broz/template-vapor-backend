@@ -11,34 +11,25 @@
             "size": "hobby"
         }
     },
-    "env": {
-        "SWIFT_VERSION": {
-            "value": "5.5"
-        }
-    },
+    "addons": [
+        "heroku-postgresql:basic"
+    ],
     "environments": {
         "review": {
             "formation": {
                 "web": {
                     "quantity": 1,
-                    "size": "free"
+                    "size": "eco"
                 }
             },
+            "addons": [
+                "heroku-postgresql:mini"
+            ],
             "env": {
-                "SWIFT_VERSION": {
-                    "value": "5.5"
-                },
                 "ENVIRONMENT_NAME": {
                     "value": "review"
                 }
             }
         }
-    },
-    "scripts": {
-        "pr-predestroy": {
-            "command": "teardown_review_pr_environment_database",
-            "size": "free"
-        }
-    },
-    "stack": "heroku-20"
+    }
 }
