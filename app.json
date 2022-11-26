@@ -14,11 +14,6 @@
     "addons": [
         "heroku-postgresql:basic"
     ],
-    "env": {
-        "SWIFT_VERSION": {
-            "value": "5.5"
-        }
-    },
     "environments": {
         "review": {
             "formation": {
@@ -31,14 +26,10 @@
                 "heroku-postgresql:mini"
             ],
             "env": {
-                "SWIFT_VERSION": {
-                    "value": "5.5"
-                },
                 "ENVIRONMENT_NAME": {
                     "value": "review"
                 }
             }
         }
-    },
-    "stack": "heroku-20"
+    }
 }
