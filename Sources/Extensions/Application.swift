@@ -27,9 +27,12 @@ extension Application {
                               as: .psql)
         case .review, .staging, .production:
             let databaseURL = try Environment.Variables.getDatabaseURL()
-            guard let postgresConfiguration = PostgresConfiguration(url: databaseURL) else {
+            guard var postgresConfiguration = PostgresConfiguration(url: databaseURL) else {
                 throw ConfigurationError.unableToInitialiazePostgresConfiguration
             }
+            var clientTLSConfiguration = TLSConfiguration.makeClientConfiguration()
+            clientTLSConfiguration.certificateVerification = .none
+            postgresConfiguration.tlsConfiguration = clientTLSConfiguration
             databases.use(.postgres(configuration: postgresConfiguration), as: .psql)
         default:
             throw ConfigurationError.unknownEnvironmentDetected
