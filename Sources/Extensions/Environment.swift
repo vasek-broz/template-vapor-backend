@@ -4,48 +4,30 @@
 import Vapor
 
 extension Environment {
-    static func bootstrap() throws -> Environment {
-        .init(name: try Environment.Variables.getEnvironmentName())
-    }
-    
     // MARK: - Custom -
     static var staging: Environment {
         .custom(name: "staging")
     }
     
-    static var developmentReview: Environment {
-        .custom(name: "development-review")
-    }
-    
-    static var pullRequestReview: Environment {
-        .custom(name: "pull-request-review")
+    static var review: Environment {
+        .custom(name: "review")
     }
     
     // MARK: - Variables -
     struct Variables {
-        static func getDatabaseConnectionString() throws -> String {
-            guard let databaseConnectionStringValue = get("DATABASE_CONNECTION_STRING") else {
-                throw VariablesError.missingEnvironmentVariable(name: "DATABASE_CONNECTION_STRING")
+        static func getDatabaseURL() throws -> URL {
+            guard let databaseURLVariableValue = get("DATABASE_URL") else {
+                throw VariablesError.missingEnvironmentVariable(name: "DATABASE_URL")
             }
-            return databaseConnectionStringValue
-        }
-        
-        static func getEnvironmentName() throws -> String {
-            guard let environmentNameValue = get("ENVIRONMENT_NAME") else {
-                throw VariablesError.missingEnvironmentVariable(name: "ENVIRONMENT_NAME")
+            guard let databaseURL = URL(string: databaseURLVariableValue) else {
+                throw VariablesError.wrongTypeOfEnvironmentVariable(name: "DATABASE_URL")
             }
-            return environmentNameValue
-        }
-        
-        static func getHerokuAppName() throws -> String {
-            guard let herokuAppNameValue = get("HEROKU_APP_NAME") else {
-                throw VariablesError.missingEnvironmentVariable(name: "HEROKU_APP_NAME")
-            }
-            return herokuAppNameValue
+            return databaseURL
         }
     }
     
     enum VariablesError: Error {
         case missingEnvironmentVariable(name: String)
+        case wrongTypeOfEnvironmentVariable(name: String)
     }
 }

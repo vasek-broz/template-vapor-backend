@@ -11,20 +11,25 @@
             "size": "hobby"
         }
     },
-    "env": {
-        "SWIFT_VERSION": {
-            "value": "5.5"
-        }
-    },
+    "addons": [
+        "heroku-postgresql:basic"
+    ],
     "environments": {
         "review": {
             "formation": {
                 "web": {
                     "quantity": 1,
-                    "size": "free"
+                    "size": "eco"
+                }
+            },
+            "addons": [
+                "heroku-postgresql:mini"
+            ],
+            "env": {
+                "ENVIRONMENT_NAME": {
+                    "value": "review"
                 }
             }
         }
-    },
-    "stack": "heroku-20"
+    }
 }

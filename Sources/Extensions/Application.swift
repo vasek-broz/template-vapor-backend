@@ -3,7 +3,7 @@
 
 import Vapor
 import Fluent
-import FluentMongoDriver
+import FluentPostgresDriver
 
 extension Application {
     // MARK: - Configuration -
@@ -12,26 +12,28 @@ extension Application {
         try setupDatabase()
         addMigrations()
         try registerRouteCollections()
+        if environment == .development || environment == .testing {
+            try autoMigrate().wait()
+        }
     }
     
     private func setupDatabase() throws {
         switch environment {
-        case .development:
-            try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template_vapor_backend_development_database"
-            ), as: .mongo)
-        case .testing:
-            try databases.use(.mongo(
-                connectionString: "mongodb://localhost:27017/template_vapor_backend_testing_database"
-            ), as: .mongo)
-        case .pullRequestReview:
-            try databases.use(.mongo(
-                connectionString: "\(Environment.Variables.getDatabaseConnectionString())/\(Environment.Variables.getHerokuAppName())"
-            ), as: .mongo)
-        case .developmentReview, .staging, .production:
-            try databases.use(.mongo(
-                connectionString: Environment.Variables.getDatabaseConnectionString()
-            ), as: .mongo)
+        case .development, .testing:
+            databases.use(.postgres(hostname: "localhost",
+                                        username: "username",
+                                        password: "password",
+                                        database: "database"),
+                              as: .psql)
+        case .review, .staging, .production:
+            let databaseURL = try Environment.Variables.getDatabaseURL()
+            guard var postgresConfiguration = PostgresConfiguration(url: databaseURL) else {
+                throw ConfigurationError.unableToInitialiazePostgresConfiguration
+            }
+            var clientTLSConfiguration = TLSConfiguration.makeClientConfiguration()
+            clientTLSConfiguration.certificateVerification = .none
+            postgresConfiguration.tlsConfiguration = clientTLSConfiguration
+            databases.use(.postgres(configuration: postgresConfiguration), as: .psql)
         default:
             throw ConfigurationError.unknownEnvironmentDetected
         }
@@ -42,7 +44,7 @@ extension Application {
     }
     
     private func registerRouteCollections() throws {
-        try register(collection: TemplateController())
+        try register(collection: TemplatesController())
     }
     
     // MARK: - Database -
@@ -53,5 +55,6 @@ extension Application {
     // MARK: - Nested Types -
     enum ConfigurationError: Error {
         case unknownEnvironmentDetected
+        case unableToInitialiazePostgresConfiguration
     }
 }

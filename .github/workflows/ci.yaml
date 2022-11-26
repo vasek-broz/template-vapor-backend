@@ -3,28 +3,28 @@ on:
     pull_request:
     push:
         branches:
-            - development
-            - master
+        - development
+        - master
 jobs:
-    macos-test:
-        name: macos-test
-        runs-on: macos-12
+    test:
+        name: test
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres
+                env:
+                    POSTGRES_DB: database
+                    POSTGRES_USER: username
+                    POSTGRES_PASSWORD: password
+                ports:
+                - 5432:5432
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
         steps:
         - uses: actions/checkout@v3
-        - name: docker_installation
-          run: brew install docker
-        - name: container_runtime_setup
-          run: colima start
-        - name: database_setup
-          run: docker run --name mongodb -d -p 27017:27017 mongo
-        - name: test
-          run: swift test
-    ubuntu-test:
-        name: ubuntu-test
-        runs-on: ubuntu-20.04
-        steps:
-        - uses: actions/checkout@v3
-        - name: database_setup
-          run: docker run --name mongodb -d -p 27017:27017 mongo
         - name: test
           run: swift test
