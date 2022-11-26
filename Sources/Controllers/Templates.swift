@@ -4,11 +4,11 @@
 import Fluent
 import Vapor
 
-struct TemplateController: RouteCollection {
+struct TemplatesController: RouteCollection {
     // MARK: - Boot -
     func boot(routes: RoutesBuilder) throws {
-        let templateRoute = routes.grouped("template")
-        templateRoute.get("all", use: getAllTemplates)
+        let templatesRoute = routes.grouped("templates")
+        templatesRoute.get(use: getAllTemplates)
     }
 
     // MARK: - Handlers -
