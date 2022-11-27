@@ -13,6 +13,7 @@ extension Application {
         addMigrations()
         try registerRouteCollections()
         if environment == .development || environment == .testing {
+        setupMiddlewares()
             try autoMigrate().wait()
         }
     }
@@ -47,7 +48,14 @@ extension Application {
         try register(collection: TemplatesRouteCollection())
     }
     
-    // MARK: - Database -
+    private func setupMiddlewares() {
+        middleware.use(FileMiddleware(publicDirectory: directory.workingDirectory + "/Resources/Public/"))
+        if environment == .review || environment == .staging || environment == .production {
+            middleware.use(ForceHTTPSMiddleware())
+        }
+    }
+    
+    // MARK: - Computed Properties -
     var database: Database {
         db
     }
