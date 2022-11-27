@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "TemplateVaporBackend",
+    name: "Template Vapor Backend",
     platforms: [
        .macOS(.v12)
     ],
@@ -13,7 +13,7 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "App",
+            name: "Application",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "Fluent", package: "fluent"),
@@ -30,7 +30,7 @@ let package = Package(
         .testTarget(
             name: "Tests",
             dependencies: [
-                .target(name: "App"),
+                .target(name: "Application"),
                 .product(name: "XCTVapor", package: "vapor"),
             ],
             path: "Tests"

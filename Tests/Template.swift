@@ -1,7 +1,7 @@
 //  Template.swift
 //  Created by Václav Brož on 15. 10. 2022
 
-@testable import App
+@testable import Application
 import XCTVapor
 
 final class TemplateTests: XCTestCase {
