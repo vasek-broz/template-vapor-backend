@@ -44,7 +44,7 @@ extension Application {
     }
     
     private func registerRouteCollections() throws {
-        try register(collection: TemplatesController())
+        try register(collection: TemplatesRouteCollection())
     }
     
     // MARK: - Database -
