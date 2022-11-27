@@ -1,0 +1,30 @@
+name: CI
+on:
+    pull_request:
+    push:
+        branches:
+        - development
+        - master
+jobs:
+    test:
+        name: test
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres
+                env:
+                    POSTGRES_DB: database
+                    POSTGRES_USER: username
+                    POSTGRES_PASSWORD: password
+                ports:
+                - 5432:5432
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+        steps:
+        - uses: actions/checkout@v3
+        - name: test
+          run: swift test
