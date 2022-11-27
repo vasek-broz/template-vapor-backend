@@ -4,8 +4,8 @@ on:
         types:
         - closed
 jobs:
-    review environment and deployments teardown:
-        name: review environment and deployments teardown
+    review_environment_and_deployments_teardown:
+        name: Review Environment and Deployments Teardown
         runs-on: ubuntu-latest
         steps:
         - uses: strumwolf/delete-deployment-environment@v2
