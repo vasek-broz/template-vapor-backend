@@ -1,5 +1,5 @@
 //  Application.swift
-//  Created by Václav Brož on 15. 10. 2022
+//  Created by Václav Brož on 15/10/2022.
 
 import Vapor
 import Fluent
@@ -8,12 +8,11 @@ import FluentPostgresDriver
 extension Application {
     // MARK: - Configuration -
     func configure() throws {
-        middleware.use(FileMiddleware(publicDirectory: directory.workingDirectory + "/Resources/Public/"))
         try setupDatabase()
         addMigrations()
         try registerRouteCollections()
-        if environment == .development || environment == .testing {
         setupMiddlewares()
+        if environment == .development {
             try autoMigrate().wait()
         }
     }
