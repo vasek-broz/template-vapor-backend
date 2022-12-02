@@ -4,12 +4,15 @@
 import Vapor
 
 @main struct Executable {
-    static func main() throws {
+    static func main() async throws {
         var environment = try Environment.detect()
         try LoggingSystem.bootstrap(from: &environment)
         let application = Application(environment)
         defer { application.shutdown() }
         try application.configure()
+        if environment == .development {
+            try await application.autoMigrate()
+        }
         try application.run()
     }
 }

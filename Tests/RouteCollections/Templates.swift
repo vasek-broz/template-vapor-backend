@@ -6,15 +6,23 @@ import XCTVapor
 import Fluent
 
 final class TemplatesRouteCollectionTests: XCTestCase {
-    // MARK: - Tests -
-    func testGettingAllTemplates() async throws {
-        let application = Application(.testing)
-        defer { application.shutdown() }
-        
+    // MARK: - Properties -
+    let application: Application = .init(.testing)
+    
+    // MARK: - Lifecycle -
+    override func setUp() async throws {
         try application.configure()
+        // TODO: Try using XCTFluent instead of actual database
         application.migrations.add(DatabasePopulationMigration())
         try await application.autoMigrate()
-        
+    }
+    
+    override func tearDown() {
+        application.shutdown()
+    }
+    
+    // MARK: - Tests -
+    func testGettingAllTemplates() async throws {        
         try application.test(.GET, "templates", afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let decodedResponseContent = try response.content.decode([TemplateModel].self)

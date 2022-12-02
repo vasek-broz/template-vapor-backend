@@ -3,6 +3,8 @@
 
 import Vapor
 
+// TODO: Modify this validator so it is not possible to use it directly (it should serve just for creation of validatiors with individual regular expressions)
+
 extension Validator where T == String {
     static func matchesRegEx(_ regularExpression: String) -> Validator<T> {
         .init { string in
