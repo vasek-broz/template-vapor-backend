@@ -12,9 +12,6 @@ extension Application {
         addMigrations()
         try registerRouteCollections()
         setupMiddlewares()
-        if environment == .development {
-            try autoMigrate().wait()
-        }
     }
     
     private func setupDatabase() throws {
