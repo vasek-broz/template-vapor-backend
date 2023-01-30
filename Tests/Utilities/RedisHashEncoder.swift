@@ -6,92 +6,75 @@ import XCTest
 import RediStack
 
 final class RedisHashEncoderXCTestCase: XCTestCase {
+    // MARK: - Constants -
+    private static let SINGLE_VALUE = "single value"
+    private static let OBJECT_WITH_PROPERTY_OF_OBJECT_TYPE = ObjectWithPropertyOfObjectType(propertyOfObjectType: .init(property: "property"))
+    private static let OBJECT = Object(integerProperty: 3647,
+                                       optionalIntegerProperty: nil,
+                                       stringProperty: "property",
+                                       optinalStringProperty: nil,
+                                       booleanProperty: true,
+                                       optionalBooleanProperty: nil,
+                                       stringCodableObjectProperty: .init(property: "string codable object property"),
+                                       optionalstringCodableObjectProperty: nil)
+    
     // MARK: - Tests -
     func testArrayEncoding() {
         XCTAssertThrowsError(try RedisHashEncoder().encode([ArrayElement()]))
     }
     
-    func testObjectWithOptionalFieldsContainingActualValuesIntegerFieldEncoding() throws {
-        let redisHashParameters = try RedisHashEncoder().encode(ObjectToEncode.WITH_OPTIONAL_FIELDS_CONTAINING_ACTUAL_VALUES)
-        let integerFieldKeyRedisHashParameter = RESPValue(from: ObjectToEncode.CodingKeyes.integerField.rawValue)
-        let integerFieldValueRedisHashParameter = RESPValue(from: ObjectToEncode.WITH_OPTIONAL_FIELDS_CONTAINING_ACTUAL_VALUES.integerField)
-        
-        XCTAssert(redisHashParameters.contains(integerFieldKeyRedisHashParameter))
-        let numberOfIntegerFieldKeysInRedisHashParameters = redisHashParameters
-            .filter { $0 == integerFieldKeyRedisHashParameter }
-            .count
-        XCTAssertEqual(numberOfIntegerFieldKeysInRedisHashParameters, 1)
-        let indexOfIntegerFieldKeyInRedisHashParameters = redisHashParameters.firstIndex(of: integerFieldKeyRedisHashParameter)!
-        XCTAssertEqual(redisHashParameters[indexOfIntegerFieldKeyInRedisHashParameters + 1],
-                       integerFieldValueRedisHashParameter)
+    func testSingleValueEncoding() {
+        XCTAssertThrowsError(try RedisHashEncoder().encode(RedisHashEncoderXCTestCase.SINGLE_VALUE))
     }
     
-    // TODO: Create complete tests
+    func testObjectWithPropertyOfObjectTypeEncoding() {
+        XCTAssertThrowsError(try RedisHashEncoder().encode(RedisHashEncoderXCTestCase.OBJECT_WITH_PROPERTY_OF_OBJECT_TYPE))
+    }
+    
+    func testObjectEncoding() {
+        XCTAssertNoThrow(try RedisHashEncoder().encode(RedisHashEncoderXCTestCase.OBJECT))
+        // TODO: Complete this test
+    }
     
     // MARK: - Nested Types -
-    struct ArrayElement: Codable {}
+    private struct ArrayElement: Codable {}
     
-    struct ObjectToEncode: Codable {
-        static let WITH_OPTIONAL_FIELDS_CONTAINING_ACTUAL_VALUES = ObjectToEncode(integerField: 3824,
-                                                                                  optionalIntegerField: 593092,
-                                                                                  stringField: "2874rtf87ewshadwoisa",
-                                                                                  optinalStringField: "87634ywf98ewohd7834",
-                                                                                  booleanField: true,
-                                                                                  optionalBooleanField: false,
-                                                                                  nestedObjectField: .init(integerField: 2893749832,
-                                                                                                           optionalIntegerField: 589784293,
-                                                                                                           stringField: "hf2479wjeoiufhd789234",
-                                                                                                           optinalStringField: "hf2367rjesd7f489",
-                                                                                                           booleanField: false,
-                                                                                                           optionalBooleanField: true),
-                                                                                  optionalNestedObjectField: .init(integerField: 8234,
-                                                                                                                   optionalIntegerField: 3,
-                                                                                                                   stringField: "fsiou",
-                                                                                                                   optinalStringField: "4738",
-                                                                                                                   booleanField: true,
-                                                                                                                   optionalBooleanField: false))
+    private struct ObjectWithPropertyOfObjectType: Codable {
+        let propertyOfObjectType: Object
         
-        static let EXAMPLE_WITHOUT_OPTIONAL_VALUES = ObjectToEncode(integerField: 3824,
-                                                                    optionalIntegerField: 593092,
-                                                                    stringField: "2874rtf87ewshadwoisa",
-                                                                    optinalStringField: "87634ywf98ewohd7834",
-                                                                    booleanField: true,
-                                                                    optionalBooleanField: false,
-                                                                    nestedObjectField: .init(integerField: 8234,
-                                                                                             optionalIntegerField: 3,
-                                                                                             stringField: "fsiou",
-                                                                                             optinalStringField: "4738",
-                                                                                             booleanField: true,
-                                                                                             optionalBooleanField: false),
-                                                                    optionalNestedObjectField: nil)
-        
-        let integerField: Int
-        let optionalIntegerField: Int?
-        let stringField: String
-        let optinalStringField: String?
-        let booleanField: Bool
-        let optionalBooleanField: Bool?
-        let nestedObjectField: NestedObjectToEncode
-        let optionalNestedObjectField: NestedObjectToEncode?
-        
-        enum CodingKeyes: String, CodingKey {
-            case integerField
-            case optionalIntegerField
-            case stringField
-            case optinalStringField
-            case booleanField
-            case optionalBooleanField
-            case nestedObjectField
-            case optionalNestedObjectField
+        struct Object: Codable {
+            let property: String
         }
+    }
+    
+    private struct Object: Codable {
+        let integerProperty: Int
+        let optionalIntegerProperty: Int?
+        let stringProperty: String
+        let optinalStringProperty: String?
+        let booleanProperty: Bool
+        let optionalBooleanProperty: Bool?
+        let stringCodableObjectProperty: StringCodableObject
+        let optionalstringCodableObjectProperty: StringCodableObject?
         
-        struct NestedObjectToEncode: Codable {
-            let integerField: Int
-            let optionalIntegerField: Int
-            let stringField: String
-            let optinalStringField: String?
-            let booleanField: Bool
-            let optionalBooleanField: Bool
+        struct StringCodableObject: StringCodable {
+            let property: String
+            
+            init(property: String) {
+                self.property = property
+            }
+            
+            init?(from string: String) {
+                property = string
+            }
+            
+            var string: String {
+                property
+            }
+            
+            var description: String {
+                property
+            }
         }
     }
 }
