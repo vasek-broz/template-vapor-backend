@@ -10,17 +10,6 @@ struct RedisHashEncoder {
         try value.encode(to: redisHashEncoder)
         return redisHashEncoder.output
     }
-    
-    enum EncodingError: Error, CustomStringConvertible {
-        case objectContainingArray
-        
-        var description: String {
-            switch self {
-            case .objectContainingArray:
-                return "Object to encode contains array which is not supported in Redis hash data type."
-            }
-        }
-    }
 }
 
 // MARK: - _RedisHashEncoder -
@@ -46,6 +35,12 @@ fileprivate struct _RedisHashEncoder {
             let key = codingKeys.map { $0.stringValue }.joined(separator: ".")
             stringKeyValuePairs[key] = value
         }
+    }
+    
+    enum EncodingError: Error {
+        case objectContainingArray
+        case singleValueToEncode
+        case objectContainingNestedObject
     }
 }
 
@@ -142,7 +137,13 @@ extension _RedisHashKeyedEncodingContainer: KeyedEncodingContainerProtocol {
     }
 
     mutating func encode<T: Encodable>(_ value: T, forKey key: Key) throws {
-        try value.encode(to: _RedisHashEncoder(encodedContent: encodedContent, codingPath: codingPath + [key]))
+        if let stringCodableValue = value as? StringCodable {
+            encodedContent.insert(value: stringCodableValue.string, at: codingPath + [key])
+        } else {
+            throw EncodingError.invalidValue(value, .init(codingPath: codingPath + [key],
+                                                          debugDescription: "Encoding objects with properties of object type is not supported.",
+                                                          underlyingError: _RedisHashEncoder.EncodingError.objectContainingNestedObject))
+        }
     }
 
     mutating func encodeIfPresent(_ value: Bool?, forKey key: Key) throws {
@@ -202,12 +203,18 @@ extension _RedisHashKeyedEncodingContainer: KeyedEncodingContainerProtocol {
     }
 
     mutating func encodeIfPresent<T: Encodable>(_ value: T?, forKey key: Key) throws {
-        try value.encode(to: _RedisHashEncoder(encodedContent: encodedContent, codingPath: [key]))
+        if let optionalStringCodableValue = value as? StringCodable? {
+            encodedContent.insert(value: .init(describing: optionalStringCodableValue), at: codingPath + [key])
+        } else {
+            throw EncodingError.invalidValue(value as Any, .init(codingPath: codingPath + [key],
+                                                                 debugDescription: "Encoding objects with properties of object type is not supported.",
+                                                                 underlyingError: _RedisHashEncoder.EncodingError.objectContainingNestedObject))
+        }
     }
     
     mutating func nestedContainer<NestedKey: CodingKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
-        let redisHashKeyedEncodingContainer = _RedisHashKeyedEncodingContainer<NestedKey>(encodedContent: encodedContent,
-                                                                                          codingPath: codingPath + [key])
+        let redisHashKeyedEncodingContainer = _RedisHashKeyedEncodingContainer<NestedKey>(encodedContent: .init(),
+                                                                                          codingPath: [])
         return KeyedEncodingContainer(redisHashKeyedEncodingContainer)
     }
 
@@ -237,67 +244,100 @@ extension _RedisHashUnkeyedEncodingContainer: UnkeyedEncodingContainer {
     }
     
     mutating func encodeNil() throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue("null", .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Bool) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: String) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Double) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
+        
     }
     
     mutating func encode(_ value: Float) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Int) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Int8) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Int16) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Int32) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: Int64) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: UInt) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: UInt8) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: UInt16) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: UInt32) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode(_ value: UInt64) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func encode<T: Encodable>(_ value: T) throws {
-        throw RedisHashEncoder.EncodingError.objectContainingArray
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Object to encode contains array which is not supported in Redis hash data type.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
     
     mutating func nestedContainer<NestedKey: CodingKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> {
@@ -326,66 +366,102 @@ fileprivate struct _RedisHashSingleValueEncodingContainer {
 
 extension _RedisHashSingleValueEncodingContainer: SingleValueEncodingContainer {
     mutating func encodeNil() throws {
-        encodedContent.insert(value: "null", at: codingPath)
+        throw EncodingError.invalidValue("null", .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Bool) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: String) throws {
-        encodedContent.insert(value: value, at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Double) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Float) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Int) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Int8) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.objectContainingArray))
     }
 
     mutating func encode(_ value: Int16) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Int32) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: Int64) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: UInt) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: UInt8) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: UInt16) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: UInt32) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode(_ value: UInt64) throws {
-        encodedContent.insert(value: .init(describing: value), at: codingPath)
+        throw EncodingError.invalidValue(value, .init(codingPath: codingPath,
+                                                      debugDescription: "Single value encoding to Redis hash data type is not supported.",
+                                                      underlyingError: _RedisHashEncoder.EncodingError.singleValueToEncode))
     }
 
     mutating func encode<T: Encodable>(_ value: T) throws {
-        try value.encode(to: _RedisHashEncoder(encodedContent: encodedContent, codingPath: codingPath))
+        if let stringCodableValue = value as? StringCodable {
+            encodedContent.insert(value: .init(describing: stringCodableValue.string), at: codingPath)
+        } else {
+            throw EncodingError.invalidValue(value as Any, .init(codingPath: codingPath,
+                                                                 debugDescription: "Encoding objects with properties of object type is not supported.",
+                                                                 underlyingError: _RedisHashEncoder.EncodingError.objectContainingNestedObject))
+        }
     }
 }
