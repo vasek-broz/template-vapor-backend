@@ -18,7 +18,6 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
-                .product(name: "Redis", package: "redis")
             ],
             path: "Sources",
             swiftSettings: [
