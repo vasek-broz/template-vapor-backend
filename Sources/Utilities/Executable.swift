@@ -1,5 +1,5 @@
 //  Executable.swift
-//  Created by Václav Brož on 15/10/2022.
+//  Created by Václav Brož on 15/10/2022
 
 import Vapor
 

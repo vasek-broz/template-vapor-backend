@@ -1,5 +1,5 @@
 //  RegularExpression.swift
-//  Created by Václav Brož on 27/11/2022.
+//  Created by Václav Brož on 27/11/2022
 
 @testable import Application
 import XCTVapor
