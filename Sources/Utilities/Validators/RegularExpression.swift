@@ -1,5 +1,5 @@
 //  RegularExpression.swift
-//  Created by Václav Brož on 27/12/2022.
+//  Created by Václav Brož on 27/12/2022
 
 import Vapor
 
